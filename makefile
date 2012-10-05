@@ -14,6 +14,10 @@ CCOPTS?=-Wall -Wextra -Wmissing-prototypes -Wstrict-prototypes \
 SCANBUILD?=scan-build
 SCANOPTS?=-analyze-headers --use-analyzer $(shell which clang)
 
+ifdef PATCH_ONLY
+CCOPTS+=-DPATCH_ONLY
+endif
+
 all:
 	#$(CC) $(CCOPTS) -pipe -march=native -O3 $(SRC).c -o $(SRC)$(EXT)
 	$(CC) $(CCOPTS) $(SRC).c -o $(SRC)$(EXT)

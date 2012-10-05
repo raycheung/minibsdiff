@@ -51,7 +51,9 @@
 
 /* Create one large compilation unit */
 #include "bspatch.c"
+#ifndef PATCH_ONLY
 #include "bsdiff.c"
+#endif
 
 /* ------------------------------------------------------------------------- */
 /* -- Utilities ------------------------------------------------------------ */
@@ -68,11 +70,17 @@ barf(const char* msg)
 static void
 usage(void)
 {
+#ifndef PATCH_ONLY
   printf("usage:\n\n"
          "Generate patch:"
          "\t$ %s gen <v1> <v2> <patch>\n"
          "Apply patch:"
          "\t$ %s app <v1> <patch> <v2>\n", progname, progname);
+#else
+  printf("usage:\n\n"
+         "Apply patch:"
+         "\t$ %s app <v1> <patch> <v2>\n", progname);
+#endif
   exit(EXIT_FAILURE);
 }
 
@@ -111,6 +119,7 @@ write_file(const char* f, u_char* buf, long sz)
 /* ------------------------------------------------------------------------- */
 /* -- Main routines -------------------------------------------------------- */
 
+#ifndef PATCH_ONLY
 static void
 diff(const char* oldf, const char* newf, const char* patchf)
 {
@@ -149,6 +158,7 @@ diff(const char* oldf, const char* newf, const char* patchf)
   printf("Created patch file %s\n", patchf);
   exit(EXIT_SUCCESS);
 }
+#endif
 
 static void
 patch(const char* inf, const char* patchf, const char* outf)
@@ -196,8 +206,10 @@ main(int ac, char* av[])
   progname = av[0];
   if (ac != 5) usage();
 
+#ifndef PATCH_ONLY
   if (memcmp(av[1], "gen", 3) == 0)
     diff(av[2], av[3], av[4]);
+#endif
   if (memcmp(av[1], "app", 3) == 0)
     patch(av[2], av[3], av[4]);
 
