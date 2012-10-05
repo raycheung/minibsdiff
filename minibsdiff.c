@@ -130,15 +130,21 @@ diff(const char* oldf, const char* newf, const char* patchf)
   off_t patchsz;
   int res;
 
+#ifdef VERBOSE_OUTPUT
   printf("Generating binary patch between %s and %s\n", oldf, newf);
+#endif
 
   /* Read old and new files */
   oldsz = read_file(oldf, &old);
   newsz = read_file(newf, &new);
+#ifdef VERBOSE_OUTPUT
   printf("Old file = %lu bytes\nNew file = %lu bytes\n", oldsz, newsz);
+#endif
 
   /* Compute delta */
+#ifdef VERBOSE_OUTPUT
   printf("Computing binary delta...\n");
+#endif
 
   patchsz = bsdiff_patchsize_max(oldsz, newsz);
   patch = malloc(patchsz+1); /* Never malloc(0) */
@@ -146,7 +152,9 @@ diff(const char* oldf, const char* newf, const char* patchf)
   if (res <= 0) barf("bsdiff() failed!");
   patchsz = res;
 
+#ifdef VERBOSE_OUTPUT
   printf("sizeof(delta('%s', '%s')) = %lu bytes\n", oldf, newf, patchsz);
+#endif
 
   /* Write patch */
   write_file(patchf, patch, patchsz);
@@ -155,7 +163,9 @@ diff(const char* oldf, const char* newf, const char* patchf)
   free(new);
   free(patch);
 
+#ifdef VERBOSE_OUTPUT
   printf("Created patch file %s\n", patchf);
+#endif
   exit(EXIT_SUCCESS);
 }
 #endif
@@ -170,12 +180,16 @@ patch(const char* inf, const char* patchf, const char* outf)
   ssize_t newsz;
   int res;
 
+#ifdef VERBOSE_OUTPUT
   printf("Applying binary patch %s to %s\n", patchf, inf);
+#endif
 
   /* Read old file and patch file */
   insz    = read_file(inf, &inp);
   patchsz = read_file(patchf, &patchp);
+#ifdef VERBOSE_OUTPUT
   printf("Old file = %lu bytes\nPatch file = %lu bytes\n", insz, patchsz);
+#endif
 
   /* Apply delta */
   newsz = bspatch_newsize(patchp, patchsz);
@@ -192,7 +206,9 @@ patch(const char* inf, const char* patchf, const char* outf)
   free(patchp);
   free(newp);
 
+#ifdef VERBOSE_OUTPUT
   printf("Successfully applied patch; new file is %s\n", outf);
+#endif
   exit(EXIT_SUCCESS);
 }
 
